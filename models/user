@@ -1,0 +1,29 @@
+const { User } = require("../connection/mysqlDatabase");
+
+module.exports = (database,Sequelize) => {
+  const User = database.define('users', {
+    uid: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    phonenumber: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+    },
+  },{
+    timeStamp: true
+  });
+return User;
+}
+

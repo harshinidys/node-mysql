@@ -1,0 +1,15 @@
+const Sequelize = require('sequelize')
+const database = new Sequelize(
+    'mydb',
+    'root',
+    'password',
+     {
+       dialect: 'mysql'
+     })
+const db={}
+
+db.Sequelize= Sequelize
+db.database= database
+db.User= require('../models/user')(database,Sequelize);
+
+module.exports=db;

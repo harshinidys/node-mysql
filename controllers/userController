@@ -1,0 +1,74 @@
+const db= require('../connection/mysqlDatabase');
+const jwt = require('jsonwebtoken');
+const User= db.User;
+const jwtfile = require('../middleware/jwt');
+
+// Create a new user
+ async function createUser(req, res){
+  try {
+    const { name, email, phonenumber } = req.body;
+    const data={email:email,phonenumber:phonenumber};
+    const jwtSecretKey = "secret key";
+    const token = jwt.sign(data, jwtSecretKey);
+    console.log("token : ",token);
+    const user = await User.create({ name, email, phonenumber });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Read all users
+async function getUsers (req, res,next){
+  console.log('started');
+  console.log('verified user data : ',req.user);
+  try {
+    
+    const users = await User.findAll();
+    // console.log('users',users);
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update a user
+async function updateUser(req, res){
+  try {
+    const uid = req.params.uid;
+    const { name, email, phonenumber } = req.body;
+    const user = await User.findByPk(uid);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.name = name;
+    user.email = email;
+    user.phonenumber = phonenumber;
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete a user
+async function deleteUser(req, res){
+  try {
+    const uid = req.params.uid;
+    const user = await User.findByPk(uid);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    await user.destroy();
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  getUsers,
+  updateUser,
+  deleteUser,
+};
